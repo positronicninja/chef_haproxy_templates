@@ -65,6 +65,8 @@ backend rails_app_servers_ssl
   balance <%= node[:haproxy][:balance] %>
   option redispatch
   option ssl-hello-chk
+  option forwardfor
+  http-request set-header X-Forwarded-Proto https if { ssl_fc }
   <% node[:haproxy][:rails_backends].each do |backend| -%>
   server <%= backend['name'] %> <%= backend['ip'] %>:443 weight <%= backend['backends'] || 10 %> maxconn <%= backend['backends'] * node[:haproxy][:maxcon_factor_rails_app_ssl] %> check inter <%= node[:haproxy][:check_interval] %>
   <% end -%>
